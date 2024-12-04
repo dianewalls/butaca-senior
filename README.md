@@ -1,4 +1,10 @@
-# Instrucciones
+# Proyecto Base
+
+Este es el proyecto base para el **Taller de desarrollo de una aplicación con IA generativa** del [Diplomado en Inteligencia Artificial Generativa](https://educacioncontinua.uc.cl/programas/diplomado-en-inteligencia-artificial-generativa/) de la PUC.
+
+Tiene lo necesario para comenzar a programar una aplicación web con [Flask](https://flask.palletsprojects.com/en/stable/), y para hacer despliegue de la aplicación en [Render](https://render.com/).
+
+## Instrucciones de instalación
 
 Una vez descargado el proyecto, crear Virtual environment:
 
