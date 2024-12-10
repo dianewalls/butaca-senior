@@ -38,3 +38,11 @@ Y luego ya puedes ejecutar el proyecto localmente con
 ```sh
 flask run --debug
 ```
+
+## Agregar a tu propio GitHub
+
+Si descargaste el proyecto con `git clone`, para agregarlo a tu propio repositorio tienes que hacer lo siguiente:
+
+1. [Crear un nuevo repositorio](https://github.com/new) (en blanco).
+2. Cambiar la URL del `origin` por la de tu nuevo repositorio: `git remote set-url origin git@github.com:tu-username/tu-nombre-de-repo.git`
+3. Listo, ahora puedes subir el código base a tu propio repositorio con `git push -u origin main`
