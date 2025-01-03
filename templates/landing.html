@@ -1,33 +1,57 @@
+{% extends 'base.html' %} {% block title %} Butaca Senior {% endblock %} {%
+block content %}
 
+<div
+  id="message-container"
+  class="container col-xxl-8 px-4 py-5"
+  style="background: #322418; border-radius: 10px"
+>
+  <h1 style="color: #ffffff; text-align: center">Butaca Senior</h1>
+  <p style="color: #d3c7b7; text-align: center; font-size: 1.2em">
+    Tu guía personal hacia el cine clásico.
+  </p>
+  <p style="color: #d3c7b7; text-align: center; font-size: 1em">
+    Explora historias inolvidables y descubre las joyas del séptimo arte en
+    pocos segundos.
+  </p>
 
+  <div style="text-align: center; margin-bottom: 20px">
+    <img
+      src="{{ url_for('static', filename='logo.png') }}"
+      alt="Logo Butaca Senior"
+      style="width: 150px; border-radius: 50%"
+    />
+  </div>
 
-{% extends 'base.html' %}
-
-{% block title %}
-    Butaca Senior
-{% endblock %}
-
-{% block content %}
-
-    <div id="message-container"  class="container col-xxl-8 px-4 py-5" style="background: #322418">
-        
-    <h1>Butaca Senior</h1>
-    <p>Deja de buscar, empieza a disfrutar.</p>
-    <p>Encuentra tu próxima película o serie en segundos, sin perder horas eligiendo.</p>
-    <h2>Sé de los primeros!</h2>
-    <p>
-      El estreno de esta aplicación está previsto para mediados de enero de
-      2025. 🚀
-    </p>
-
-        <form method="POST">
-            <div class="input-group mb-3">
-                <input name="email" type="email" required="required" class="form-control" placeholder="Ingresa tu correo electrónico" aria-label="email" aria-describedby="email"/>
-                <input type="submit" class="btn btn-primary" id="send-message" name="submit" value="Enviar"/>
-
-            </div>
-        </form>
-
+  <form method="POST">
+    <div class="input-group mb-3">
+      <input
+        name="email"
+        type="email"
+        required="required"
+        class="form-control"
+        placeholder="Ingresa tu correo electrónico"
+        aria-label="email"
+        aria-describedby="email"
+      />
+      <input
+        type="submit"
+        class="btn btn-primary"
+        id="send-message"
+        name="submit"
+        value="Enviar"
+      />
     </div>
-
+  </form>
+  <div style="text-align: center; margin-top: 20px">
+    <img
+      src="{{ url_for('static', filename='classic-movies.webp') }}"
+      alt="Películas Clásicas"
+      style="width: 100%; max-width: 500px; border-radius: 10px"
+    />
+  </div>
+</div>
+<footer class="footer">
+  <p>&copy; 2025 ButacaSenior. Todos los derechos reservados.</p>
+</footer>
 {% endblock %}

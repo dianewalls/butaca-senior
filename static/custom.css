@@ -1,0 +1,161 @@
+/* Body background image */
+body {
+    background: url('telon.png') no-repeat center center;
+    background-size: cover;
+}
+
+/* Custom Bootstrap theme colors */
+:root {
+    --bs-primary: #7E1326; /* Burgundy */
+    --bs-secondary: #322418; /* Bistre */
+    --bs-success: #28A745;
+    --bs-info: #17A2B8;
+    --bs-warning: #FAF2B5; /* Vanilla */
+    --bs-danger: #BD0D32; /* Red */
+}
+
+/* Custom Button Styling */
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    color: #fff; /* Ensure text remains visible */
+    box-shadow: none; /* Remove default Bootstrap shadow */
+    outline: none; /* Remove outline */
+}
+
+/* Hover State */
+.btn-primary:hover {
+    background-color: #5c0c1a; /* Darker shade of Burgundy for hover */
+    border-color: #5c0c1a;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Active (Clicked) State */
+.btn-primary:active {
+    background-color: #4a0815; /* Even darker shade of Burgundy for active state */
+    border-color: #4a0815;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Create an inset shadow effect */
+    transform: translateY(1px); /* Slightly offset to simulate pressing */
+}
+
+/* Focus State */
+.btn-primary:focus, 
+.btn-primary:focus-visible {
+    background-color: var(--bs-primary); /* Retain base color */
+    border-color: var(--bs-primary); /* Match base border color */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.7); /* Subtle glow for accessibility */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Disabled State */
+.btn-primary:disabled,
+.btn-primary:disabled:hover,
+.btn-primary:disabled:active,
+.btn-primary:disabled:focus {
+    background-color: #aaa; /* Gray for disabled buttons */
+    border-color: #aaa;
+    color: #666; /* Dimmed text for disabled state */
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed; /* Indicate disabled state */
+}
+
+
+/* Custom Button Styling for Secondary */
+.btn-secondary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #2a1c14; /* Darker shade of Bistre for hover */
+    border-color: #2a1c14;
+}
+
+/* Custom Alert Styling */
+.alert-success {
+    background-color: var(--bs-success);
+    color: white;
+}
+
+
+
+/* Chat Bubble Styling */
+.d-flex.flex-row.justify-content-start .p-3 {
+    background: #BB925E; /* Golden color */
+    color: #322418;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.d-flex.flex-row.justify-content-end .p-3 {
+    background: #7E1326; /* Burgundy */
+    color: #FAF2B5; /* Vanilla */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+.chatbot-container {
+    padding: 20px;
+
+    border-radius: 8px;
+}
+
+.d-flex.gap-2 {
+    gap: 15px; /* Adjust gap between buttons */
+}
+
+.input-group {
+    margin-top: 15px;
+}
+
+.container {
+    
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Makes sure the container takes up the full height of the viewport */
+}
+
+.content {
+
+    background: rgba(50, 36, 24, 0.95); /* Transparent bistre */
+    border: 5px solid #BB925E; /* Golden border */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    margin: 20px auto;
+    max-width: 800px;
+    flex: 1; /* This ensures the content takes up all available space */
+}
+
+.footer {
+    text-align: center;
+    padding: 5px 0 0 0;
+    color: #fff;
+    /* Footer will always be at the bottom of the page */
+}
+/* Optional: Adjust background size for smaller screens */
+@media (max-width: 768px) {
+    body {
+        background-size: contain;
+    }
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .chatbot-wrapper {
+        padding: 10px;
+    }
+    .btn-primary {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+}

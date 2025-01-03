@@ -1,26 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es" data-bs-theme="dark">
-    <head>
-        {% block head %}
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-        {% block styles %}
-            <!-- Bootstrap CSS -->
-            {{ bootstrap.load_css() }}
-        {% endblock %}
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }} {% endblock %}
 
-        <title>{% block title %}Butaca Senior{% endblock %}</title>
-        {% endblock %}
-    </head>
-    <body style="background: url('{{ url_for('static', filename='telon.png') }}') no-repeat center center; background-size: cover">
-        <!-- Your page content -->
-        {% block content %}{% endblock %}
+    <title>{% block title %}Butaca Senior{% endblock %}</title>
 
-        {% block scripts %}
-            <!-- Optional JavaScript -->
-            {{ bootstrap.load_js() }}
-        {% endblock %}
-    </body>
+    {% endblock %}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">{% block content %}{% endblock %}</div>
+
+      {% block scripts %}
+      <!-- Optional JavaScript -->
+      {{ bootstrap.load_js() }} {% endblock %}
+      
+    </div>
+  </body>
 </html>
