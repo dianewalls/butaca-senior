@@ -120,7 +120,7 @@ def profile():
     
     intent = request.form.get("intent")
     
-    if intent == "Cancelar":
+    if intent == "Volver al chat":
         return redirect(url_for("chat", user_id=user.id))
     # Handle POST request to update profile values
     

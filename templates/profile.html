@@ -21,7 +21,6 @@
     <div class="input-group mb-3">
       <input 
         name="pelicula_favorita" 
-        required="required" 
         class="form-control" 
         placeholder="Pelicula Favorita?" 
         aria-label="Pelicula Favorita?" 
@@ -32,7 +31,6 @@
     <div class="input-group mb-3">
       <input 
         name="genero_favorito" 
-        required="required" 
         class="form-control" 
         placeholder="Genero Favorito?" 
         aria-label="Genero Favorito?" 
@@ -40,9 +38,9 @@
         value="{{genero_favorito if genero_favorito else ''}}"/>
     </div>
 
-    <div class="input-group mb-3">
+    <div class="d-flex justify-content-between mt-3">
       <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Enviar"/>
-      <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Cancelar"/>
+      <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Volver al chat"/>
     </div>
   </form>
 </div>
