@@ -1,12 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" data-bs-theme="dark">
   <head>
     {% block head %}
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
     {% block styles %}
@@ -16,9 +14,7 @@
     <title>{% block title %}Butaca Senior{% endblock %}</title>
 
     {% endblock %}
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='custom.css') }}"
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}"
     />
   </head>
   <body>
@@ -28,7 +24,6 @@
       {% block scripts %}
       <!-- Optional JavaScript -->
       {{ bootstrap.load_js() }} {% endblock %}
-      
     </div>
   </body>
 </html>

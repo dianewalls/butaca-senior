@@ -6,7 +6,11 @@ with app.app_context():
     db.create_all()
 
     user = User(email="user@example.org")
-    message = Message(content="Hola! Soy Butaca Senior, un recomendador de películas vintage. ¿En qué te puedo ayudar?", author="assistant", user=user)
+    message = Message(
+        content="Hola! Soy Butaca Senior, un recomendador de películas vintage. ¿En qué te puedo ayudar?",
+        author="assistant",
+        user=user,
+    )
 
     db.session.add(user)
     db.session.add(message)

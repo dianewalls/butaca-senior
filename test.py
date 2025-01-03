@@ -12,8 +12,8 @@ with app.app_context():
     if user:
         print(user.email)
         print(user.id)
-    else: 
-        user=User(email=email)
+    else:
+        user = User(email=email)
         db.session.add(user)
         db.session.commit()
         print(user.email)
