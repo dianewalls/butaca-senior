@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Próximamente: Butaca Senior</title>
-  </head>
-  <body>
+
+
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Butaca Senior
+{% endblock %}
+
+{% block content %}
+
+    <div id="message-container"  class="container col-xxl-8 px-4 py-5" style="background: #322418">
+        
     <h1>Butaca Senior</h1>
     <p>Deja de buscar, empieza a disfrutar.</p>
     <p>Encuentra tu próxima película o serie en segundos, sin perder horas eligiendo.</p>
@@ -13,10 +19,15 @@
       El estreno de esta aplicación está previsto para mediados de enero de
       2025. 🚀
     </p>
-    <p>
-      Por mientras,
-      <a href="https://forms.gle/6Viq6LLRmiXtD1Cu6">déjanos tu correo</a> y te
-      avisaremos cuando la lancemos.
-    </p>
-  </body>
-</html>
+
+        <form method="POST">
+            <div class="input-group mb-3">
+                <input name="email" type="email" required="required" class="form-control" placeholder="Ingresa tu correo electrónico" aria-label="email" aria-describedby="email"/>
+                <input type="submit" class="btn btn-primary" id="send-message" name="submit" value="Enviar"/>
+
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}

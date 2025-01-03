@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Butaca Senior
+{% endblock %}
+
+{% block content %}
+    <div id="message-container"  class="container col-xxl-8 px-4 py-5" style="background: #322418">
+        {% for message in messages %}
+            {% if message.author == 'assistant' %}
+                <div class="d-flex flex-row justify-content-start mb-4">
+                    <img class="bg-white" src="{{ url_for('static', filename='logo.png') }}" alt="avatar 1" style="width: 45px; height: 100%;">
+                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: #BB925E;">
+                        <p class="small mb-0" style="color: #322418">{{message.content}}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="d-flex flex-row justify-content-end mb-4">
+                    <div class="p-3 me-3 border bg-body-tertiary" style="border-radius: 15px;">
+                        <p class="small mb-0">{{message.content}}</p>
+                    </div>
+              </div>
+            {% endif %}
+        {% endfor %}
+
+       <form method="POST">
+            <div class="input-group mb-3">
+                <input name="message" class="form-control" placeholder="Enviar mensaje a Butaca Senior" aria-label="Tu mensaje" aria-describedby="send-message"/>
+                <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Enviar"/>
+
+                <input type="submit" class="btn btn-primary" id="send-message-1" name="intent" value="Quiero tener suerte"/>
+                <input type="submit" class="btn btn-primary" id="send-message-2" name="intent" value="Terror"/>
+                <input type="submit" class="btn btn-primary" id="send-message-3" name="intent" value="Acción"/>
+                <input type="submit" class="btn btn-primary" id="send-message-4" name="intent" value="Comedia"/>
+                <input type="submit" class="btn btn-primary" id="send-message-4" name="profile" value="Modificar perfil"/>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+

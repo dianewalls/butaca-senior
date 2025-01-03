@@ -1,0 +1,31 @@
+
+
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Butaca Senior
+{% endblock %}
+
+{% block content %}
+
+    <div id="message-container"  class="container col-xxl-8 px-4 py-5" style="background: #322418">
+    <h1>Perfil de {{username}}</h1>
+
+<form method="POST">
+    <div class="input-group mb-3">
+        <input name="message" required="required" class="form-control" placeholder="Pelicula Favorita?" aria-label="Pelicula Favorita?" aria-describedby="send-message"/>
+    </div>
+    <div class="input-group mb-3">
+
+        <input name="message" required="required" class="form-control" placeholder="Genero Favorito?" aria-label="Genero Favorito?" aria-describedby="send-message"/>
+    </div>
+    <div class="input-group mb-3">
+
+        <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Enviar"/>
+    </div>
+</form>
+
+    </div>
+
+{% endblock %}
