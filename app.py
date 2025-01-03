@@ -45,6 +45,9 @@ def chat():
 
     intent = request.form.get("intent")
 
+    if intent=="Modificar perfil":
+        return redirect(url_for("profile", user_id=user_id))
+
     intents = {
         "Quiero tener suerte": "Recomiéndame una película",
         "Terror": "Recomiéndame una película de terror",
@@ -60,10 +63,23 @@ def chat():
         db.session.add(Message(content=user_message, author="user", user=user))
         db.session.commit()
 
+        content = """
+                Eres un chatbot llamado 'Butaca Senior' especializado en recomendar películas estrenadas antes de 1990. 
+                Tu tarea es ofrecer recomendaciones breves y concisas, asegurándote de no repetir ninguna película. 
+                Cada recomendación debe incluir el año de estreno y el rating en IMDb.
+                """
+        
+        if user.genero_favorito:
+            content+= f"Ten en cuenta que el género favorito de la persona es {user.genero_favorito}"
+        if user.pelicula_favorita:
+            content+= f" y su película favorita es {user.pelicula_favorita}"
+            
+        print(content)
+            
         messages_for_llm = [
             {
                 "role": "system",
-                "content": "Eres un chatbot que recomienda películas, te llamas 'Butaca Senior'. Tu rol es responder recomendaciones de peliculas estrenadas antes de 1990, de manera breve y concisa. No repitas recomendaciones. Tus respuestas deben incluir el rating IMDB asi como el año de estreno.",
+                "content": content,
             }
         ]
 
@@ -88,8 +104,40 @@ def chat():
         return render_template("chat.html", messages=user.messages, user_id=user.id)
 
 
-@app.route("/profile")
-def user():
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    
     user_id = request.args.get("user_id")
+    
     user = db.session.query(User).filter_by(id=user_id).first()
-    return render_template("profile.html", username=user.email)
+    
+    if request.method == "GET":
+        return render_template("profile.html", 
+                               username=user.email, 
+                               pelicula_favorita=user.pelicula_favorita, 
+                               genero_favorito=user.genero_favorito)
+
+    
+    intent = request.form.get("intent")
+    
+    if intent == "Cancelar":
+        return redirect(url_for("chat", user_id=user.id))
+    # Handle POST request to update profile values
+    
+    pelicula_favorita = request.form.get("pelicula_favorita")    
+    genero_favorito = request.form.get("genero_favorito")
+    
+    # Update the user's profile with new values if they exist
+    if pelicula_favorita:
+        user.pelicula_favorita = pelicula_favorita
+    if genero_favorito:
+        user.genero_favorito = genero_favorito
+
+    # Commit changes to the database
+    db.session.commit()
+
+    # After saving, redirect or render the updated profile page
+    return render_template("profile.html", 
+                           username=user.email, 
+                           pelicula_favorita=user.pelicula_favorita, 
+                           genero_favorito=user.genero_favorito)

@@ -1,23 +1,48 @@
 {% extends 'base.html' %} 
 {% block title %} Butaca Senior {% endblock %} 
-{%block content %}
+{% block content %}
 
-<div
-  id="message-container"
-  class="container col-xxl-8 px-4 py-5"
-  style="background: #322418"
->
+<div id="message-container">
   <h1>Perfil de {{username}}</h1>
+
+  {% if pelicula_favorita %}
+    <p>
+      Tu pelicula favorita es {{pelicula_favorita}}
+    </p>
+  {% endif %}
+
+  {% if genero_favorito %}
+    <p>
+      Y tu genero favorito es {{genero_favorito}}
+    </p>
+  {% endif %}
 
   <form method="POST">
     <div class="input-group mb-3">
-      <input name="message" required="required" class="form-control" placeholder="Pelicula Favorita?" aria-label="Pelicula Favorita?" aria-describedby="send-message"/>
+      <input 
+        name="pelicula_favorita" 
+        required="required" 
+        class="form-control" 
+        placeholder="Pelicula Favorita?" 
+        aria-label="Pelicula Favorita?" 
+        aria-describedby="send-message" 
+        value="{{pelicula_favorita if pelicula_favorita else ''}}"/>
     </div>
+
     <div class="input-group mb-3">
-      <input name="message" required="required" class="form-control" placeholder="Genero Favorito?" aria-label="Genero Favorito?" aria-describedby="send-message"/>
+      <input 
+        name="genero_favorito" 
+        required="required" 
+        class="form-control" 
+        placeholder="Genero Favorito?" 
+        aria-label="Genero Favorito?" 
+        aria-describedby="send-message" 
+        value="{{genero_favorito if genero_favorito else ''}}"/>
     </div>
+
     <div class="input-group mb-3">
       <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Enviar"/>
+      <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Cancelar"/>
     </div>
   </form>
 </div>
