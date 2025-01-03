@@ -10,6 +10,8 @@
     {% for message in messages %}
       {% if message.author == 'assistant' %}
         <div class="d-flex flex-row justify-content-start mb-4">
+          <img class="bg-white" src="{{ url_for('static', filename='logo.png') }}" alt="avatar 1" style="width: 45px; height: 100%;">
+
           <div class="p-3 ms-3">
             <p class="small mb-0">{{ message.content }}</p>
           </div>
