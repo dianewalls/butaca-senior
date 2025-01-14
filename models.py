@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy.orm import relationship
 from db import db
 from sqlalchemy import (
@@ -34,3 +35,13 @@ class Message(db.Model):
     author = Column(String, nullable=False)  # 'user' or 'assistant'
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="messages")
+
+
+class Prompt(BaseModel):
+    content: str
+    movie: str
+    year: int
+    company: str
+    is_vintage: bool
+    is_specific: bool
+    

@@ -2,7 +2,15 @@
 body {
   background: url("telon.png") no-repeat center center;
   background-size: cover;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  height: 100%;
+  margin: 0;
+  overflow: auto; /* Evita el scroll en toda la página */
+}
+
+.logo {
+  width: 45px;
+  height: 45px;
 }
 
 /* Custom Bootstrap theme colors */
@@ -13,6 +21,13 @@ body {
   --bs-info: #17a2b8;
   --bs-warning: #faf2b5; /* Vanilla */
   --bs-danger: #bd0d32; /* Red */
+}
+
+#message-container {
+  flex: 1;
+  overflow-y: auto; /* Permite el scroll solo en el contenedor de mensajes */
+  padding: 10px;
+  max-height: 60vh;
 }
 
 /* Custom Button Styling */
@@ -100,16 +115,21 @@ body {
 
 .chatbot-container {
   padding: 20px;
-
   border-radius: 8px;
+}
+
+.chatbot-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 70vh; /* Altura completa de la ventana */
 }
 
 .d-flex.gap-2 {
   gap: 15px; /* Adjust gap between buttons */
 }
 
-.input-group {
-  margin-top: 15px;
+.fixed-top {
+  z-index: 1030;
 }
 
 .container {
@@ -147,6 +167,7 @@ body {
   .chatbot-wrapper {
     padding: 10px;
   }
+  
   .btn-primary {
     font-size: 1rem;
     padding: 8px 15px;

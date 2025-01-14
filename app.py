@@ -4,7 +4,8 @@ from flask_bootstrap import Bootstrap5
 from openai import OpenAI
 from dotenv import load_dotenv
 from db import db, db_config
-from models import User, Message
+from models import User, Message, Prompt
+import tmdb_api
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
@@ -175,23 +176,31 @@ def chat():
 
     if intent in intents:
         user_message = intents[intent]
-
+        
         # Guardar nuevo mensaje en la BD
         db.session.add(Message(content=user_message, author="user", user=user))
         db.session.commit()
 
         content = """
-                Eres un chatbot llamado 'Butaca Senior' especializado en recomendar películas estrenadas antes de 1990. 
+                Eres un chatbot llamado 'Butaca Senior' especializado en películas estrenadas antes de 1990. 
                 Tu tarea es ofrecer recomendaciones breves y concisas, asegurándote de no repetir ninguna película. 
                 Cada recomendación debe incluir el año de estreno y el rating en IMDb.
+                
+                Extrae la siguiente información del prompt si es que está disponible:
+                
+                - Nombre de la pelicula a consultar
+                - Si la pregunta es específica o no
+                - Año de estreno (sólo si está en el prompt)
+                - Compañia que la produjo (se puede obtener si no está en el prompt)
+                - Si es vintage o no (se puede obtener si no está en el prompt)
+                
+                Agrega esa info a los datos de prompt del usuario.
                 """
         
         if user.genero_favorito:
             content+= f"Ten en cuenta que el género favorito de la persona es {user.genero_favorito}"
         if user.pelicula_favorita:
             content+= f" y su película favorita es {user.pelicula_favorita}"
-            
-        print(content)
             
         messages_for_llm = [
             {
@@ -208,11 +217,54 @@ def chat():
                 }
             )
 
-        chat_completion = client.chat.completions.create(
-            messages=messages_for_llm, model="gpt-4o", temperature=1
+        chat_completion = client.beta.chat.completions.parse(
+            messages=messages_for_llm,
+            model="gpt-4o", 
+            temperature=1,
+            response_format=Prompt
         )
-
-        model_recommendation = chat_completion.choices[0].message.content
+        
+        movie = chat_completion.choices[0].message.parsed.movie
+        year = chat_completion.choices[0].message.parsed.year
+        is_vintage  = chat_completion.choices[0].message.parsed.is_vintage
+        is_specific = chat_completion.choices[0].message.parsed.is_specific
+        
+        print(f"movie: {movie}, is_vintage: {is_vintage}, is_specific: {is_specific}, year: {year}")
+        
+        if is_specific:
+            print('Searching in TMDB')
+            movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
+            movie_id = movie_info["results"][0]["id"] if movie_info else ''
+            movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
+            movie_provider = tmdb_api.donde_ver_pelicula(movie_id) if movie_id else ''
+            upcoming = tmdb_api.peliculas_por_estrenar()
+        
+            content += f"""
+                Para responder con mayor precisión, utiliza la siguiente información:
+                {movie_info}
+                {movie_details}
+                {movie_provider}
+                {upcoming}
+                """
+        
+        messages_for_llm = [
+            {
+                "role": "system",
+                "content": content,
+            },
+            {
+                "role": "user",
+                "content": user_message,
+            }
+        ]
+        
+        model_recommendation = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages_for_llm,
+            temperature=1.0,
+            response_format={"type": "text"},
+        ).choices[0].message.content
+        
         db.session.add(
             Message(content=model_recommendation, author="assistant", user=user)
         )
