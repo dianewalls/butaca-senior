@@ -5,7 +5,7 @@ body {
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   height: 100%;
   margin: 0;
-  overflow: hidden; /* Evita el scroll en toda la página */
+  overflow: auto; /* Evita el scroll en toda la página */
 }
 
 .logo {
@@ -121,7 +121,7 @@ body {
 .chatbot-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Altura completa de la ventana */
+  height: 70vh; /* Altura completa de la ventana */
 }
 
 .d-flex.gap-2 {

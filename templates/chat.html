@@ -34,6 +34,7 @@
       {% endif %}
     {% endfor %}
   </div>
+  <hr class="my-4">
   <form method="POST">
     <div class="input-group mb-3">
       <input name="message" class="form-control" placeholder="Enviar mensaje a Butaca Senior" aria-label="Tu mensaje" aria-describedby="send-message" />
@@ -53,19 +54,5 @@
   <hr class="my-4">
 
 </div>
-
-<script>
-  function scrollToBottom() {
-    const messageContainer = document.getElementById('message-container');
-    messageContainer.scrollTop = messageContainer.scrollHeight;
-  }
-
-  // Scroll to bottom on page load
-  window.onload = scrollToBottom;
-
-  // Scroll to bottom when a new message is added
-  const observer = new MutationObserver(scrollToBottom);
-  observer.observe(document.getElementById('message-container'), { childList: true });
-</script>
 
 {% endblock %}
