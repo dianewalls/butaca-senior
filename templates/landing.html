@@ -20,12 +20,16 @@
     />
   </div>
 
-  <form method="POST">
-    <div class="input-group mb-3">
-      <input name="email" type="email" required="required" class="form-control" placeholder="Ingresa tu correo electrónico" aria-label="email" aria-describedby="email" />
-      <input type="submit" class="btn btn-primary" id="send-message" name="submit" value="Enviar" />
-    </div>
-  </form>
+  <div style="text-align: center">
+    <p style="color: #d3c7b7; text-align: center; font-size: 1em">
+      Si quieres disfrutar de todas las ventajas de Butaca Senior, regístrate
+    </p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Registrarse</a>
+
+    <p style="color: #d3c7b7; text-align: center; font-size: 1em; margin-top: 20px">
+      ¿Ya tienes una cuenta? Inicia sesión
+    </p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Iniciar sesión</a>
   <div style="text-align: center; margin-top: 20px">
     <img
       src="{{ url_for('static', filename='classic-movies.webp') }}"
