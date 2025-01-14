@@ -176,8 +176,6 @@ def chat():
 
     if intent in intents:
         user_message = intents[intent]
-
-        print(user_message)
         
         # Guardar nuevo mensaje en la BD
         db.session.add(Message(content=user_message, author="user", user=user))
@@ -234,7 +232,7 @@ def chat():
         print(f"movie: {movie}, is_vintage: {is_vintage}, is_specific: {is_specific}, year: {year}")
         
         if is_specific:
-            print('Search in TMDB')
+            print('Searching in TMDB')
             movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
             movie_id = movie_info["results"][0]["id"] if movie_info else ''
             movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
