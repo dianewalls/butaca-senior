@@ -51,4 +51,19 @@
     <hr class="my-4">
   </div>
 </div>
+
+<script>
+  function scrollToBottom() {
+    const messageContainer = document.getElementById('message-container');
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+  }
+
+  // Scroll to bottom on page load
+  window.onload = scrollToBottom;
+
+  // Scroll to bottom when a new message is added
+  const observer = new MutationObserver(scrollToBottom);
+  observer.observe(document.getElementById('message-container'), { childList: true });
+</script>
+
 {% endblock %}
