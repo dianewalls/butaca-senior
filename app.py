@@ -177,6 +177,8 @@ def chat():
     if intent in intents:
         user_message = intents[intent]
 
+        print(user_message)
+        
         # Guardar nuevo mensaje en la BD
         db.session.add(Message(content=user_message, author="user", user=user))
         db.session.commit()
@@ -225,10 +227,14 @@ def chat():
         )
         
         movie = chat_completion.choices[0].message.parsed.movie
+        year = chat_completion.choices[0].message.parsed.year
         is_vintage  = chat_completion.choices[0].message.parsed.is_vintage
         is_specific = chat_completion.choices[0].message.parsed.is_specific
         
-        if is_specific or not is_vintage:
+        print(f"movie: {movie}, is_vintage: {is_vintage}, is_specific: {is_specific}, year: {year}")
+        
+        if is_specific:
+            print('Search in TMDB')
             movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
             movie_id = movie_info["results"][0]["id"] if movie_info else ''
             movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
@@ -243,7 +249,16 @@ def chat():
                 {upcoming}
                 """
         
-        messages_for_llm[0]["content"] = content
+        messages_for_llm = [
+            {
+                "role": "system",
+                "content": content,
+            },
+            {
+                "role": "user",
+                "content": user_message,
+            }
+        ]
         
         model_recommendation = client.chat.completions.create(
             model="gpt-4o",

@@ -8,12 +8,14 @@
     <input type="submit" class="btn btn-secondary" id="send-message-4" name="intent" value="{{ username }}" />
     <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar sesión</a>
   </div>
-  <hr class="my-4">
 </form>
-
+<div align="center">
+  <h1>Butaca Senior</h1>
+  <h6>Chat Bot especializado en recomendaciones vintage!</h6>
+</div>
+<hr class="my-4">
 <div class="chatbot-wrapper">
   <div id="message-container" class="container chatbot-container">
-    
     {% for message in messages %}
       {% if message.author == 'assistant' %}
         <div class="d-flex flex-row justify-content-start mb-4">
