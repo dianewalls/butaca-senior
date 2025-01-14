@@ -3,7 +3,8 @@ from flask_bootstrap import Bootstrap5
 from openai import OpenAI
 from dotenv import load_dotenv
 from db import db, db_config
-from models import User, Message
+from models import User, Message, Prompt
+import tmdb_api
 
 load_dotenv()
 
@@ -45,7 +46,7 @@ def chat():
 
     intent = request.form.get("intent")
 
-    if intent=="Modificar perfil":
+    if intent == "Modificar perfil":
         return redirect(url_for("profile", user_id=user_id))
 
     intents = {
@@ -64,17 +65,25 @@ def chat():
         db.session.commit()
 
         content = """
-                Eres un chatbot llamado 'Butaca Senior' especializado en recomendar películas estrenadas antes de 1990. 
+                Eres un chatbot llamado 'Butaca Senior' especializado en películas estrenadas antes de 1990. 
                 Tu tarea es ofrecer recomendaciones breves y concisas, asegurándote de no repetir ninguna película. 
                 Cada recomendación debe incluir el año de estreno y el rating en IMDb.
+                
+                Extrae la siguiente información del prompt si es que está disponible:
+                
+                - Nombre de la pelicula a consultar
+                - Si la pregunta es específica o no
+                - Año de estreno (sólo si está en el prompt)
+                - Compañia que la produjo (se puede obtener si no está en el prompt)
+                - Si es vintage o no (se puede obtener si no está en el prompt)
+                
+                Agrega esa info a los datos de prompt del usuario.
                 """
         
         if user.genero_favorito:
             content+= f"Ten en cuenta que el género favorito de la persona es {user.genero_favorito}"
         if user.pelicula_favorita:
             content+= f" y su película favorita es {user.pelicula_favorita}"
-            
-        print(content)
             
         messages_for_llm = [
             {
@@ -91,11 +100,43 @@ def chat():
                 }
             )
 
-        chat_completion = client.chat.completions.create(
-            messages=messages_for_llm, model="gpt-4o", temperature=1
+        chat_completion = client.beta.chat.completions.parse(
+            messages=messages_for_llm,
+            model="gpt-4o", 
+            temperature=1,
+            response_format=Prompt
         )
-
-        model_recommendation = chat_completion.choices[0].message.content
+        
+        print(chat_completion.choices[0].message.parsed)
+        
+        movie = chat_completion.choices[0].message.parsed.movie
+        is_vintage  = chat_completion.choices[0].message.parsed.is_vintage
+        is_specific = chat_completion.choices[0].message.parsed.is_specific
+        
+        if is_specific or not is_vintage:
+            movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
+            movie_id = movie_info["results"][0]["id"] if movie_info else ''
+            movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
+            movie_provider = tmdb_api.donde_ver_pelicula(movie_id) if movie_id else ''
+            upcoming = tmdb_api.peliculas_por_estrenar()
+        
+            content += f"""
+                Para responder con mayor precisión, utiliza la siguiente información:
+                {movie_info}
+                {movie_details}
+                {movie_provider}
+                {upcoming}
+                """
+        
+        messages_for_llm[0]["content"] = content
+        
+        model_recommendation = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages_for_llm,
+            temperature=1.0,
+            response_format={"type": "text"},
+        ).choices[0].message.content
+        
         db.session.add(
             Message(content=model_recommendation, author="assistant", user=user)
         )
