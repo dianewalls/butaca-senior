@@ -11,13 +11,16 @@ from sqlalchemy import (
 )
 from datetime import datetime
 
+from flask_login import UserMixin
 
-class User(db.Model):
+
+class User(db.Model, UserMixin):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
     pelicula_favorita = Column(String, nullable=True)
     genero_favorito = Column(String, nullable=True)
 

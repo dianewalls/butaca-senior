@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %} Butaca Senior {% endblock %}
+{% block content %}
+
+<div class="login-wrapper">
+  <div class="container login-container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <form id="login-form" method="POST" onsubmit="return validateLogin()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <div id="error-message" class="text-danger">
+        {% if error %}
+          {{ error }}
+        {% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  async function validateLogin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('error-message');
+
+    const response = await fetch('{{ url_for("login") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: password })
+    });
+
+    const data = await response.json();
+
+    if (!data.valid) {
+      errorMessage.textContent = data.message;
+      return false;
+    }
+
+    errorMessage.textContent = '';
+    return true;
+  }
+</script>
+
+{% endblock %}

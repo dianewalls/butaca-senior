@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %} Butaca Senior {% endblock %}
+{% block content %}
+
+<div class="register-wrapper">
+  <div class="container register-container">
+    <form id="register-form" method="POST" onsubmit="return validateRegistration()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <div class="mb-3">
+        <label for="confirm_password" class="form-label">Confirmar contraseña</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+      </div>
+
+      <hr class="my-4">
+
+      <p>
+        Cuéntanos un poco más sobre ti...
+        (no es obligación, pero nos encantaría conocerte mejor)
+      </p>
+      <div class="mb-3">
+        <label for="favorite_genre" class="form-label">Género favorito</label>
+        <input type="text" class="form-control" id="favorite_genre" name="favorite_genre">
+      </div>
+      <div class="mb-3">
+        <label for="favorite_movie" class="form-label">Película favorita</label>
+        <input type="text" class="form-control" id="favorite_movie" name="favorite_movie">
+      </div>
+      <div id="error-message" class="text-danger">
+        {% if error %}
+          {{ error }}
+        {% endif %}
+      </div>
+
+      <!-- Separador de secciones -->
+      <hr class="my-4">
+
+      <button type="submit" class="btn btn-primary">Registrarse</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  async function validateRegistration() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirm_password = document.getElementById('confirm_password').value;
+    const favorite_genre = document.getElementById('favorite_genre').value;
+    const favorite_movie = document.getElementById('favorite_movie').value;
+    const errorMessage = document.getElementById('error-message');
+
+    const response = await fetch('{{ url_for("register") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(
+        { email: email, 
+          password: password, 
+          confirm_password: confirm_password, 
+          favorite_genre: favorite_genre, 
+          favorite_movie: favorite_movie 
+        })
+    });
+
+    const data = await response.json();
+
+    if (!data.valid) {
+      errorMessage.textContent = data.message;
+      return false;
+    }
+
+    errorMessage.textContent = '';
+    return true;
+  }
+</script>
+
+{% endblock %}

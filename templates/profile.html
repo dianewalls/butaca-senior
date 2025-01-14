@@ -1,46 +1,41 @@
 {% extends 'base.html' %} 
 {% block title %} Butaca Senior {% endblock %} 
 {% block content %}
-
+<form method="POST">
+  <div class="fixed-top bg-transparent p-2 d-flex justify-content-end">
+    <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar sesión</a>
+  </div>
+  <hr class="my-4">
+</form>
 <div id="message-container">
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-success">
+      {{ messages[0] }}
+    </div>
+  {% endif %}
+  {% endwith %}
   <h1>Perfil de {{username}}</h1>
-
-  {% if pelicula_favorita %}
-    <p>
-      Tu pelicula favorita es {{pelicula_favorita}}
-    </p>
-  {% endif %}
-
-  {% if genero_favorito %}
-    <p>
-      Y tu genero favorito es {{genero_favorito}}
-    </p>
-  {% endif %}
+  <h6> Revisa las opciones a continuación para revisar o modificar tus datos personales y preferencias. </h6>
+  <hr class="my-4">
 
   <form method="POST">
-    <div class="input-group mb-3">
-      <input 
-        name="pelicula_favorita" 
-        class="form-control" 
-        placeholder="Pelicula Favorita?" 
-        aria-label="Pelicula Favorita?" 
-        aria-describedby="send-message" 
-        value="{{pelicula_favorita if pelicula_favorita else ''}}"/>
+    <p> Si deseas cambiar las preferencias de películas y género, haz click aquí </p>
+    <div class="d-flex justify-content-between mt-3">
+      <a href="{{ url_for('preferences') }}" class="btn btn-primary">Modificar preferencias</a>
     </div>
 
-    <div class="input-group mb-3">
-      <input 
-        name="genero_favorito" 
-        class="form-control" 
-        placeholder="Genero Favorito?" 
-        aria-label="Genero Favorito?" 
-        aria-describedby="send-message" 
-        value="{{genero_favorito if genero_favorito else ''}}"/>
+    <hr class="my-4">
+
+    <p> Si deseas cambiar la contraseña de tu cuenta, haz click aquí </p>
+    <div class="d-flex justify-content-between mt-3">
+      <a href="{{ url_for('password') }}" class="btn btn-primary">Cambiar contraseña</a>
     </div>
+
+    <hr class="my-4">
 
     <div class="d-flex justify-content-between mt-3">
-      <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Enviar"/>
-      <input type="submit" class="btn btn-primary" id="send-message" name="intent" value="Volver al chat"/>
+      <a href="{{ url_for('chat') }}" class="btn btn-secondary">Volver al chat</a>
     </div>
   </form>
 </div>

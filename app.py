@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+import os
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_bootstrap import Bootstrap5
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -6,12 +7,93 @@ from db import db, db_config
 from models import User, Message, Prompt
 import tmdb_api
 
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
+from flask_bcrypt import Bcrypt
+
 load_dotenv()
 
 client = OpenAI()
 app = Flask(__name__)
 bootstrap = Bootstrap5(app)
 db_config(app)
+
+
+app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
+
+
+login_manager = LoginManager()
+login_manager.login_view = "login"
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+bcrypt = Bcrypt(app)
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        favorite_movie = request.form.get("favorite_movie") or ''
+        favorite_genre = request.form.get("favorite_genre") or ''
+        
+        if password != confirm_password:
+            return render_template("register.html", error="Las contraseñas no coinciden.")
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return render_template("register.html", error="El correo electrónico ya está registrado.")
+        
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        new_user = User(
+            email=email, 
+            password=hashed_password, 
+            pelicula_favorita=favorite_movie, 
+            genero_favorito=favorite_genre
+        )
+        
+        db.session.add(new_user)
+        db.session.commit()
+        flash("Muy bien! ya tienes tu usuario y contraseña. Por favor, inicia sesión con tus credenciales para ingresar.")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if current_user.is_authenticated:
+        logout_user()
+        
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            return render_template("login.html", error="El correo electrónico no está registrado.")
+        
+        if not bcrypt.check_password_hash(user.password, password):
+            return render_template("login.html", error="Contraseña incorrecta.")
+        
+        login_user(user)
+        return redirect(url_for("chat", user_id=user.id))
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return render_template("landing.html")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -36,17 +118,52 @@ def index():
     return redirect(url_for("chat", user_id=user.id))
 
 
+@app.route("/password", methods=["GET", "POST"])
+@login_required
+def password():
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        return redirect(url_for("landing"))
+    
+    if request.method == "GET":
+        return render_template("password.html", username=user.email)
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_new_password = request.form.get('confirm_new_password')
+
+        if not bcrypt.check_password_hash(current_user.password, current_password):
+            return render_template('password.html', error='La contraseña actual es incorrecta.')
+
+        if new_password != confirm_new_password:
+            return render_template('password.html', error='Las contraseñas no coinciden.')
+
+        hashed_new_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        current_user.password = hashed_new_password
+        db.session.commit()
+        flash('Tu contraseña ha sido actualizada exitosamente. Haz login nuevamente.')
+        return redirect(url_for('login'))
+
+
 @app.route("/chat", methods=["GET", "POST"])
+@login_required
 def chat():
-    user_id = request.args.get("user_id")
-    user = db.session.query(User).filter_by(id=user_id).first()
+    
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        return render_template("error.html", error_message="No tienes permiso para ver este chat.")
+
+    user_id = user.id
 
     if request.method == "GET":
-        return render_template("chat.html", messages=user.messages, user_id=user_id)
+        return render_template("chat.html", messages=user.messages, user_id=user_id, username=user.email)
 
     intent = request.form.get("intent")
 
-    if intent == "Modificar perfil":
+    if intent==user.email:
         return redirect(url_for("profile", user_id=user_id))
 
     intents = {
@@ -140,42 +257,49 @@ def chat():
         )
         db.session.commit()
 
-        return render_template("chat.html", messages=user.messages, user_id=user.id)
+        return render_template("chat.html", messages=user.messages, user_id=user.id, username=user.email)
 
 
-@app.route("/profile", methods=["GET", "POST"])
+@app.route("/profile", methods=["GET"])
+@login_required
 def profile():
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        return redirect(url_for("landing"))
+
+    return render_template("profile.html", 
+                           username=user.email, 
+                           pelicula_favorita=user.pelicula_favorita, 
+                           genero_favorito=user.genero_favorito)
+
+
+@app.route("/preferences", methods=["GET","POST"])
+@login_required
+def preferences():
     
-    user_id = request.args.get("user_id")
-    
-    user = db.session.query(User).filter_by(id=user_id).first()
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        return redirect(url_for("landing"))
     
     if request.method == "GET":
-        return render_template("profile.html", 
+        return render_template("preferences.html",
                                username=user.email, 
                                pelicula_favorita=user.pelicula_favorita, 
                                genero_favorito=user.genero_favorito)
 
-    
-    intent = request.form.get("intent")
-    
-    if intent == "Volver al chat":
-        return redirect(url_for("chat", user_id=user.id))
-    # Handle POST request to update profile values
-    
     pelicula_favorita = request.form.get("pelicula_favorita")    
     genero_favorito = request.form.get("genero_favorito")
     
-    # Update the user's profile with new values if they exist
     if pelicula_favorita:
         user.pelicula_favorita = pelicula_favorita
     if genero_favorito:
         user.genero_favorito = genero_favorito
 
-    # Commit changes to the database
     db.session.commit()
 
-    # After saving, redirect or render the updated profile page
+    flash("Tus preferencias han sido actualizadas exitosamente.")
     return render_template("profile.html", 
                            username=user.email, 
                            pelicula_favorita=user.pelicula_favorita, 

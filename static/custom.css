@@ -2,6 +2,7 @@
 body {
   background: url("telon.png") no-repeat center center;
   background-size: cover;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
 
 /* Custom Bootstrap theme colors */
@@ -18,7 +19,6 @@ body {
 .btn-primary {
   background-color: var(--bs-primary);
   border-color: var(--bs-primary);
-  font-family: "Cinzel Decorative", serif;
   font-size: 1.1rem;
   padding: 10px 20px;
   border-radius: 5px;
