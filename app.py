@@ -107,8 +107,6 @@ def chat():
             response_format=Prompt
         )
         
-        print(chat_completion.choices[0].message.parsed)
-        
         movie = chat_completion.choices[0].message.parsed.movie
         is_vintage  = chat_completion.choices[0].message.parsed.is_vintage
         is_specific = chat_completion.choices[0].message.parsed.is_specific
