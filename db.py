@@ -5,13 +5,10 @@ import os
 
 load_dotenv()
 
-
 class Base(DeclarativeBase):
     pass
 
-
 db = SQLAlchemy(model_class=Base)
-
 
 def db_config(app):
     turso_database_url = os.environ.get("TURSO_DATABASE_URL")

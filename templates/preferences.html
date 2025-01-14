@@ -1,0 +1,62 @@
+{% extends 'base.html' %} 
+{% block title %} Butaca Senior {% endblock %} 
+{% block content %}
+<form method="POST">
+    <div class="fixed-top bg-transparent p-2 d-flex justify-content-end">
+      <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar sesión</a>
+    </div>
+    <hr class="my-4">
+</form>
+
+<div class='preferences-wrapper'>
+    <div class='container preferences-container'>
+        <h1>Preferencias de {{username}}</h1>
+        <h6> Actualiza tus preferencias para que Butaca Senior te de mejores respuestas! </h6>
+        <hr class="my-4">
+        <form id='preferences-form' method='POST' onsubmit='return validatePreferences()'>
+            <div class='mb-3'>
+                <label for='pelicula_favorita' class='form-label'>Película favorita</label>
+                <input type='text' class='form-control' id='pelicula_favorita' name='pelicula_favorita' value='{{ pelicula_favorita}}' required>
+            </div>
+            <div class='mb-3'>
+                <label for='genero_favorito' class='form-label'>Género favorito</label>
+                <input type='text' class='form-control' id='genero_favorito' name='genero_favorito' value='{{genero_favorito}}' required>
+            </div>
+            <div id='error-message' class='text-danger'>
+                {% if error %}
+                    {{ error }}
+                {% endif %}
+            </div>
+            <button type='submit' class='btn btn-primary'>Guardar preferencias</button>
+            <a href='{{ url_for("profile") }}' class='btn btn-secondary'>Volver al perfil</a>
+        </form>
+    </div>
+
+<script>
+    async function validatePreferences() {
+        const pelicula_favorita = document.getElementById('pelicula_favorita').value;
+        const genero_favorito = document.getElementById('genero_favorito').value;
+        const errorMessage = document.getElementById('error-message');
+    
+        const response = await fetch('{{ url_for("preferences") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            pelicula_favorita: pelicula_favorita,
+            genero_favorito: genero_favorito
+        })
+        });
+    
+        const data = await response.json();
+    
+        if (data.error) {
+        errorMessage.innerText = data.error;
+        return false;
+        }
+    
+        return true;
+    }
+
+{% endblock %}

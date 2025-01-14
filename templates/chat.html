@@ -3,10 +3,17 @@
 {% block title %} Butaca Senior {% endblock %}
 
 {% block content %}
+<form method="POST">
+  <div class="fixed-top bg-transparent p-2 d-flex justify-content-end">
+    <input type="submit" class="btn btn-secondary" id="send-message-4" name="intent" value="{{ username }}" />
+    <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar sesión</a>
+  </div>
+  <hr class="my-4">
+</form>
+
 <div class="chatbot-wrapper">
   <div id="message-container" class="container chatbot-container">
     
-    <!-- Messages Section -->
     {% for message in messages %}
       {% if message.author == 'assistant' %}
         <div class="d-flex flex-row justify-content-start mb-4">
@@ -25,17 +32,6 @@
       {% endif %}
     {% endfor %}
 
-    <!-- Buttons Section -->
-    <form method="POST" class="mb-4">
-      <div class="d-flex justify-content-between flex-wrap gap-2">
-        <input type="submit" class="btn btn-primary" id="send-message-1" name="intent" value="Quiero tener suerte" title="Get a random movie recommendation!" />
-        <input type="submit" class="btn btn-primary" id="send-message-2" name="intent" value="Terror" title="Horror movie recommendations!" />
-        <input type="submit" class="btn btn-primary" id="send-message-3" name="intent" value="Acción" title="Action-packed movie recommendations!" />
-        <input type="submit" class="btn btn-primary" id="send-message-4" name="intent" value="Comedia" title="Comedy movie recommendations!" />
-      </div>
-    </form>
-
-    <!-- Chat Input Section -->
     <form method="POST">
       <div class="input-group mb-3">
         <input name="message" class="form-control" placeholder="Enviar mensaje a Butaca Senior" aria-label="Tu mensaje" aria-describedby="send-message" />
@@ -43,17 +39,16 @@
       </div>
     </form>
 
-    <!-- Profile Modification Section -->
-    <form method="POST">
-
-      <!-- Return Link Section -->
-      <div class="d-flex justify-content-between mt-3">
-      <input type="submit" class="btn btn-primary" id="send-message-4" name="intent" value="Modificar perfil" />
-
-      <a href="/" class="btn btn-primary">Volver al inicio</a>
+    <form method="POST" class="mb-4">
+      <div class="d-flex justify-content-between flex-wrap gap-2">
+        <input type="submit" class="btn btn-secondary" id="send-message-1" name="intent" value="Quiero tener suerte" title="Get a random movie recommendation!" />
+        <input type="submit" class="btn btn-secondary" id="send-message-2" name="intent" value="Terror" title="Horror movie recommendations!" />
+        <input type="submit" class="btn btn-secondary" id="send-message-3" name="intent" value="Acción" title="Action-packed movie recommendations!" />
+        <input type="submit" class="btn btn-secondary" id="send-message-4" name="intent" value="Comedia" title="Comedy movie recommendations!" />
       </div>
     </form>
-    
+
+    <hr class="my-4">
   </div>
 </div>
 {% endblock %}
