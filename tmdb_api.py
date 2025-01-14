@@ -7,14 +7,12 @@ load_dotenv()
 API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
 
-
 def buscar_pelicula(nombre_pelicula):
     """Busca una película en TMDB."""
     url = f"{BASE_URL}/search/movie"
     params = {"api_key": API_KEY, "query": nombre_pelicula}
     response = requests.get(url, params=params)
     return response.json()
-
 
 def obtener_detalle_pelicula(pelicula_id):
     """Obtiene los detalles de una película por ID."""
