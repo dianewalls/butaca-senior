@@ -117,9 +117,17 @@ def index():
     return redirect(url_for("chat", user_id=user.id))
 
 
-@app.route('/password', methods=['POST'])
+@app.route("/password", methods=["GET", "POST"])
 @login_required
 def password():
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        return redirect(url_for("landing"))
+    
+    if request.method == "GET":
+        return render_template("password.html", username=user.email)
+    
     if request.method == 'POST':
         current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
@@ -136,8 +144,6 @@ def password():
         db.session.commit()
         flash('Tu contraseña ha sido actualizada exitosamente. Haz login nuevamente.')
         return redirect(url_for('login'))
-    
-    return redirect(url_for('password'))
 
 
 @app.route("/chat", methods=["GET", "POST"])
