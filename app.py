@@ -184,7 +184,6 @@ def chat():
         content = """
                 Eres un chatbot llamado 'Butaca Senior' especializado en películas estrenadas antes de 1990. 
                 Tu tarea es ofrecer recomendaciones breves y concisas, asegurándote de no repetir ninguna película. 
-                Cada recomendación debe incluir el año de estreno y el rating en IMDb.
                 
                 Extrae la siguiente información del prompt si es que está disponible:
                 
@@ -231,21 +230,35 @@ def chat():
         
         print(f"movie: {movie}, is_vintage: {is_vintage}, is_specific: {is_specific}, year: {year}")
         
-        if is_specific:
-            print('Searching in TMDB')
-            movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
+        print('Searching in TMDB')
+        
+        movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
+        if movie_info and movie_info.get("results"):
             movie_id = movie_info["results"][0]["id"] if movie_info else ''
             movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
             movie_provider = tmdb_api.donde_ver_pelicula(movie_id) if movie_id else ''
-            upcoming = tmdb_api.peliculas_por_estrenar()
-        
+
             content += f"""
                 Para responder con mayor precisión, utiliza la siguiente información:
                 {movie_info}
-                {movie_details}
-                {movie_provider}
-                {upcoming}
+                
+                Puedes extraer la fecha de estreno, los actores principales, la sinopsis, el género, la duración, el director, el presupuesto, la recaudación, la calificación de la audiencia y la calificación de la crítica.
                 """
+            
+            if movie_details:
+                content += f"""
+                    Aquí tienes más detalles sobre la película. Obtiene la información que consideres relevante:
+                    {movie_details}
+                    """
+                    
+            if movie_provider:
+                content += f"""
+                    Aquí tienes información sobre dónde puedes ver la película. Si la pregunta del usuario tiene relación a esta
+                    información, utilizala para responder. Indica todas las opciones de visualización disponibles:
+                    {movie_provider}
+                """
+        
+        print(content)
         
         messages_for_llm = [
             {
