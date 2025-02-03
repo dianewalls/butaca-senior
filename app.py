@@ -1,10 +1,10 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
 from openai import OpenAI
 from dotenv import load_dotenv
 from db import db, db_config
-from models import User, Message, Prompt
+from models import User, Message
 import tmdb_api
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -150,140 +150,92 @@ def password():
 @app.route("/chat", methods=["GET", "POST"])
 @login_required
 def chat():
-    
-    if current_user.is_authenticated:
-        user = current_user
-    else:
+    if not current_user.is_authenticated:
         return render_template("error.html", error_message="No tienes permiso para ver este chat.")
-
+    
+    user = current_user
     user_id = user.id
-
+    
     if request.method == "GET":
         return render_template("chat.html", messages=user.messages, user_id=user_id, username=user.email)
-
+    
     intent = request.form.get("intent")
-
-    if intent==user.email:
-        return redirect(url_for("profile", user_id=user_id))
-
+    user_message = request.form.get("message")
+    
     intents = {
         "Quiero tener suerte": "Recomiéndame una película",
         "Terror": "Recomiéndame una película de terror",
         "Acción": "Recomiéndame una película de acción",
         "Comedia": "Recomiéndame una película de comedia",
-        "Enviar": request.form.get("message"),
+        "Enviar": user_message,
     }
-
+    
     if intent in intents:
         user_message = intents[intent]
         
-        # Guardar nuevo mensaje en la BD
         db.session.add(Message(content=user_message, author="user", user=user))
         db.session.commit()
-
-        content = """
-                Eres un chatbot llamado 'Butaca Senior' especializado en películas estrenadas antes de 1990. 
-                Tu tarea es ofrecer recomendaciones breves y concisas, asegurándote de no repetir ninguna película. 
-                
-                Extrae la siguiente información del prompt si es que está disponible:
-                
-                - Nombre de la pelicula a consultar
-                - Si la pregunta es específica o no
-                - Año de estreno (sólo si está en el prompt)
-                - Compañia que la produjo (se puede obtener si no está en el prompt)
-                - Si es vintage o no (se puede obtener si no está en el prompt)
-                
-                Agrega esa info a los datos de prompt del usuario.
-                """
         
-        if user.genero_favorito:
-            content+= f"Ten en cuenta que el género favorito de la persona es {user.genero_favorito}"
-        if user.pelicula_favorita:
-            content+= f" y su película favorita es {user.pelicula_favorita}"
-            
-        messages_for_llm = [
-            {
-                "role": "system",
-                "content": content,
-            }
-        ]
-
+        system_prompt = f"""
+        Eres un chatbot llamado 'Butaca Senior' especializado en películas antes de 1990.
+        Proporciona recomendaciones únicas y evita repetir películas.
+        Género favorito del usuario: {user.genero_favorito or 'No especificado'}.
+        Película favorita: {user.pelicula_favorita or 'No especificada'}.
+        """
+        
+        messages_for_llm = [{"role": "system", "content": system_prompt}]
         for message in user.messages:
-            messages_for_llm.append(
-                {
-                    "role": message.author,
-                    "content": message.content,
-                }
-            )
-
-        chat_completion = client.beta.chat.completions.parse(
-            messages=messages_for_llm,
-            model="gpt-4o", 
-            temperature=1,
-            response_format=Prompt
-        )
+            messages_for_llm.append({"role": message.author, "content": message.content})
         
-        movie = chat_completion.choices[0].message.parsed.movie
-        year = chat_completion.choices[0].message.parsed.year
-        is_vintage  = chat_completion.choices[0].message.parsed.is_vintage
-        is_specific = chat_completion.choices[0].message.parsed.is_specific
-        
-        print(f"movie: {movie}, is_vintage: {is_vintage}, is_specific: {is_specific}, year: {year}")
-        
-        print('Searching in TMDB')
-        
-        movie_info = tmdb_api.buscar_pelicula(movie) if movie else ''
-        if movie_info and movie_info.get("results"):
-            movie_id = movie_info["results"][0]["id"] if movie_info else ''
-            movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if movie_id else ''
-            movie_provider = tmdb_api.donde_ver_pelicula(movie_id) if movie_id else ''
-
-            content += f"""
-                Para responder con mayor precisión, utiliza la siguiente información:
-                {movie_info}
-                
-                Puedes extraer la fecha de estreno, los actores principales, la sinopsis, el género, la duración, el director, el presupuesto, la recaudación, la calificación de la audiencia y la calificación de la crítica.
-                """
-            
-            if movie_details:
-                content += f"""
-                    Aquí tienes más detalles sobre la película. Obtiene la información que consideres relevante:
-                    {movie_details}
-                    """
-                    
-            if movie_provider:
-                content += f"""
-                    Aquí tienes información sobre dónde puedes ver la película. Si la pregunta del usuario tiene relación a esta
-                    información, utilizala para responder. Indica todas las opciones de visualización disponibles:
-                    {movie_provider}
-                """
-        
-        print(content)
-        
-        messages_for_llm = [
-            {
-                "role": "system",
-                "content": content,
-            },
-            {
-                "role": "user",
-                "content": user_message,
-            }
-        ]
-        
-        model_recommendation = client.chat.completions.create(
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages_for_llm,
-            temperature=1.0,
-            response_format={"type": "text"},
-        ).choices[0].message.content
-        
-        db.session.add(
-            Message(content=model_recommendation, author="assistant", user=user)
+            temperature=1.0
         )
+        
+        recommendation = response.choices[0].message.content
+        db.session.add(Message(content=recommendation, author="assistant", user=user))
         db.session.commit()
-
+        
         return render_template("chat.html", messages=user.messages, user_id=user.id, username=user.email)
+    
+    # Determine if the user is asking for IMDB rating or streaming availability
+    analysis_response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "Analiza si el usuario está pidiendo el puntaje IMDB o dónde ver la película."},
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.5,
+        response_format={"type": "json", "schema": {"imdb_request": "boolean", "streaming_request": "boolean", "movie_name": "string"}}
+    )
+    
+    request_data = analysis_response.choices[0].message.parsed if analysis_response.choices else {}
+    imdb_request = request_data.get("imdb_request", False)
+    streaming_request = request_data.get("streaming_request", False)
+    movie_name = request_data.get("movie_name") or (user.messages[-1].content if user.messages else None)
+    
+    if imdb_request or streaming_request:
+        movie_info = tmdb_api.buscar_pelicula(movie_name) if movie_name else None
+        
+        if movie_info and movie_info.get("results"):
+            movie_id = movie_info["results"][0]["id"]
+            movie_details = tmdb_api.obtener_detalle_pelicula(movie_id) if imdb_request else None
+            movie_provider = tmdb_api.donde_ver_pelicula(movie_id) if streaming_request else None
+            
+            response_text = ""
+            if imdb_request and movie_details:
+                response_text += f"Título: {movie_details.get('title', 'Desconocido')}\nIMDB: {movie_details.get('vote_average', 'Desconocido')}\n"
+            if streaming_request and movie_provider:
+                response_text += f"Disponible en: {', '.join([p['provider_name'] for p in movie_provider.get('results', [])])}\n"
+            
+            db.session.add(Message(content=response_text, author="assistant", user=user))
+            db.session.commit()
+            
+            return render_template("chat.html", messages=user.messages, user_id=user.id, username=user.email)
+    
+    return render_template("chat.html", messages=user.messages, user_id=user.id, username=user.email)
+
 
 
 @app.route("/profile", methods=["GET"])

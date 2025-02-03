@@ -5,7 +5,7 @@ from models import User, Message
 with app.app_context():
     db.create_all()
 
-    user = User(email="user@example.org")
+    user = User(email="user@example.org", password="password")
     message = Message(
         content="Hola! Soy Butaca Senior, un recomendador de películas vintage. ¿En qué te puedo ayudar?",
         author="assistant",

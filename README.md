@@ -1,8 +1,8 @@
-# Proyecto Base
+# Proyecto ButacaSenior
 
-Este es el proyecto base para el **Taller de desarrollo de una aplicación con IA generativa** del [Diplomado en Inteligencia Artificial Generativa](https://educacioncontinua.uc.cl/programas/diplomado-en-inteligencia-artificial-generativa/) de la PUC.
+Aplicación web que cuenta con un chatbot de estilo vintage que recomienda películas clásicas. Pensada para usuarios de 30 a 70 años que disfrutan del cine atemporal, la interfaz es minimalista y enfocada a la información, con una estética sobria y pocas imágenes.
 
-Tiene lo necesario para comenzar a programar una aplicación web con [Flask](https://flask.palletsprojects.com/en/stable/), y para hacer despliegue de la aplicación en [Render](https://render.com/).
+Esta basada en [Flask](https://flask.palletsprojects.com/en/stable/), y para hacer despliegue de la aplicación en [Render](https://render.com/). Como base de datos se ocupa [Turso](https://turso.tech/) y se conecta a  [The Movie Database (TMDB) API](https://developer.themoviedb.org/docs/getting-started) para obtener el IMDB e información de proveedores de streaming.
 
 ## Instrucciones de instalación
 
@@ -24,25 +24,43 @@ Instalar dependencias:
 pip install -r requirements.txt
 ```
 
+## Configuración de variables de entorno
+
+Antes de ejecutar el proyecto, es necesario configurar las variables de entorno. Para ello, sigue estos pasos:
+
+1. Copia el archivo `.env.sample` y renómbralo como `.env`:
+
+   ```sh
+   cp .env.sample .env
+   ```
+
+2. Completa las siguientes variables de entorno con las claves necesarias, registrándote en los servicios correspondientes:
+
+   - **TURSO_DATABASE_URL** y **TURSO_AUTH_TOKEN**: Obtén estas credenciales registrándote en [Turso](https://turso.tech/) y creando una base de datos.
+   - **OPENAI_API_KEY**: Regístrate en [OpenAI](https://platform.openai.com/signup/) y genera una clave de API.
+   - **TMDB_API_TOKEN** y **TMDB_API_KEY**: Regístrate en [The Movie Database (TMDB)](https://developer.themoviedb.org/docs/getting-started) y crea una cuenta para obtener tus credenciales.
+
+3. Guarda los cambios y asegúrate de que el archivo `.env` no se suba al repositorio (está incluido en `.gitignore`).
+
+4. Inicializa la base de datos ejecutando el siguiente comando:
+
+   ```sh
+   python seed.py
+   ```
+
+   Esto poblará la base de datos con la información inicial necesaria para el funcionamiento del chatbot.
+
 ## Ejecución
 
 Una vez ya lo instalaste, recuerda activar el Virtual Env:
-
 
 ```sh
 source venv/bin/activate
 ```
 
-Y luego ya puedes ejecutar el proyecto localmente con
+Y luego ya puedes ejecutar el proyecto localmente con:
 
 ```sh
 flask run --debug
 ```
 
-## Agregar a tu propio GitHub
-
-Si descargaste el proyecto con `git clone`, para agregarlo a tu propio repositorio tienes que hacer lo siguiente:
-
-1. [Crear un nuevo repositorio](https://github.com/new) (en blanco).
-2. Cambiar la URL del `origin` por la de tu nuevo repositorio: `git remote set-url origin git@github.com:tu-username/tu-nombre-de-repo.git`
-3. Listo, ahora puedes subir el código base a tu propio repositorio con `git push -u origin main`
